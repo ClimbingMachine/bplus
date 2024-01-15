@@ -1,16 +1,12 @@
 from torch.utils.data import DataLoader
 from ArgoData.data_centerline import Argo2Dataset
-import torch, random, os, time, argparse
+import torch, random, os, time, argparse, sys
 import numpy as np
 from tqdm import tqdm
 
 from models.ganet import get_model
 from loss.loss import *
 from utils.utils import Logger
-import os, sys
-
-# ddp settings
-import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 import torch.multiprocessing as mp

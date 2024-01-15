@@ -4,9 +4,9 @@ import torch, random, os, time, argparse
 import numpy as np
 from tqdm import tqdm
 
-from models.banet import *
+from models.banet import get_model
 from loss.loss import *
-from utils.utils import to_long, from_numpy, gpu, collate_fn, Logger
+from utils.utils import Logger
 import os
 from torch.profiler import profile, record_function, ProfilerActivity
 
