@@ -32,6 +32,7 @@ python3 data_centerline.py --root directory_to_argoverse_II --split train
 It is worthnoting that directory_to_argoverse_II raw dataset should have the following data structure:
 
 ```
+Argoverse2
 ├── train
 │   ├── ffffe3df-8d26-42c3-9e7a-59de044736a0
 │   └── ffffd7c4-c287-4c66-adba-0486c304a1c8
