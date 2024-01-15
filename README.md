@@ -45,6 +45,10 @@ Argoverse2
 │   ├── fffc1965-9f9e-4822-ade7-750d87c4b7b9
 │   └── fffa6540-a436-40ac-8cb8-3889a09f4a2c
 │   └── ...
+└── Processed
+│   ├── train
+│   ├── val
+│   └── test
 ```
 
 
