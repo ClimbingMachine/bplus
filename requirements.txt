@@ -1,6 +1,6 @@
 av2==0.2.1
 numpy==1.23.5
 pandas==1.5.1
-scipy==1.11.4
+scipy
 torch==2.0.1
 tqdm==4.64.1

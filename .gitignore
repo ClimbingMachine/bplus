@@ -2,6 +2,6 @@ __pycache__
 */__pycache__
 ./models/results
 ./tests
-./debug.ipynb
+./*.ipynb
 
 
