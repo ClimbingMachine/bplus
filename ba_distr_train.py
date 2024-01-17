@@ -1,20 +1,15 @@
 from torch.utils.data import DataLoader
 from ArgoData.data_centerline import Argo2Dataset
-import torch, random, os, time, argparse
+import torch, random, os, time, argparse, sys
 import numpy as np
 from tqdm import tqdm
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
 from models.banet import get_model
 from loss.loss import *
 from utils.utils import Logger
-import os
-from torch.profiler import profile, record_function, ProfilerActivity
-
 
 # ddp settings
-import os
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-
 import torch.multiprocessing as mp
 from torch.utils.data.distributed import DistributedSampler
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -126,7 +121,7 @@ def main(rank, args):
     ddp_setup(rank, 2)          # assume 2 gpus are use
     
     config, collate_fn, net, loss, post_process, opt = get_model()
-    # checkpoint = torch.load("./models/results/BANet1/6.000.ckpt")
+    # checkpoint = torch.load("./models/results/banet/6.000.ckpt")
     # net.load_state_dict(checkpoint['state_dict'], strict = False)   
 
     net = DDP(net, device_ids=[rank], find_unused_parameters=True)
@@ -164,7 +159,6 @@ def main(rank, args):
             sampler=DistributedSampler(val_data),
         )
 
-
     epoch = config['epoch']
     remaining_epochs = int(np.ceil(config["num_epochs"] - epoch))
 
@@ -180,7 +174,5 @@ if __name__ == "__main__":
     # parser.add_argument("--rank", type = int)
     world_size = torch.cuda.device_count()
     args = parser.parse_args()
-    
-
     mp.spawn(main, args  = (args, ), nprocs = world_size)
     #main(args)

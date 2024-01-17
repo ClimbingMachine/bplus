@@ -5,8 +5,8 @@ import numpy as np
 from tqdm import tqdm
 
 from models.banet import *
-from loss.loss1 import *
-from utils.utils import to_long, from_numpy, gpu, collate_fn, Logger
+from loss.loss import *
+from utils.utils import Logger
 import os
 
 '''
@@ -23,7 +23,6 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
     net.train()
 
     # train_loader.sampler.set_epoch(epoch)          # Calling the set_epoch() method on the DistributedSampler at the beginning of each epoch is necessary to make shuffling
-
     num_batches = len(train_loader)
     epoch_per_batch = 1.0 / num_batches
     save_iters = int(np.ceil(config["save_freq"] * num_batches))
@@ -37,9 +36,9 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
     for i, data in tqdm(enumerate(train_loader)):
         epoch += epoch_per_batch
         data = dict(data)
-
-        output = net(data)
-        loss_out = loss(output, data)
+        goal, output = net(data)
+        
+        loss_out = loss(goal, output, data)
         post_out = post_process(output, data)
         post_process.append(metrics, loss_out, post_out)
 
@@ -71,7 +70,7 @@ def val(config, data_loader, net, loss, post_process, epoch):
 
     start_time = time.time()
     metrics = dict()
-    for i, data in tqdm(enumerate(data_loader)):
+    for _, data in tqdm(enumerate(data_loader)):
 
         data = dict(data)
         with torch.no_grad():
@@ -81,8 +80,6 @@ def val(config, data_loader, net, loss, post_process, epoch):
             post_process.append(metrics, loss_out, post_out)
 
     dt = time.time() - start_time
-    # metrics = sync(metrics)
-    # if hvd.rank() == 0:
     post_process.display(metrics, dt, epoch)
     net.train()
 
@@ -110,7 +107,7 @@ def main(args):
 
     device = torch.cuda.set_device(0)    
     config, collate_fn, net, loss, post_process, opt = get_model()
-    # checkpoint = torch.load("./models/results/GANet_trail1/27.000.ckpt")
+    # checkpoint = torch.load("./models/results/banet/27.000.ckpt")
     # net.load_state_dict(checkpoint['state_dict'], strict = False)   
     
     net.to(device)
@@ -157,8 +154,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type = str, default = "../")
-
     args = parser.parse_args()
-
     main(args)
     

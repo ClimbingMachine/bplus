@@ -6,6 +6,8 @@ This repository implements a [Boundary Aware Network (BANET)](https://arxiv.org/
 ## Table of Contents
 
 * [Getting Started](#getting-started)
+* [Model Training](#model-training)
+
 
 ## Getting-Started
 
@@ -26,13 +28,13 @@ pip install -r requirements.txt
 **Step 3**: pre-process the Argoverse II Motion Forecasting Dataset:
 ```
 cd ArgoData
-python3 data_centerline.py --root directory_to_argoverse_II --split train
+python3 data_centerline.py --root path/to/Raw_Argoverse_II --split train
 ```
 
-It is worthnoting that directory_to_argoverse_II raw dataset should have the following data structure:
+It is worthnoting that path/to/Raw_Argoverse_II should have the following data structure:
 
 ```
-Argoverse2
+Raw_Argoverse_II
 ├── train
 │   ├── ffffe3df-8d26-42c3-9e7a-59de044736a0
 │   └── ffffd7c4-c287-4c66-adba-0486c304a1c8
@@ -49,7 +51,19 @@ Argoverse2
 │   ├── train
 │   ├── val
 │   └── test
+
 ```
 
+**Note 1**: it will take several hours (training data: ~10 hours; validation data: ~40 mins; and test data: ~40 mins) to preprocess the data. 
 
+## Model Training
 
+### Single GPU Training
+
+```
+python3 ba_train.py --root path/to/Raw_Argoverse_II
+```
+
+**Note 2**: during training, the checkpoints will be saved in `models/results` automatically. 
+
+**Note 3**: you can adjust the batch size and the number of devices. If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the actor2map distance or map2actor distance. 

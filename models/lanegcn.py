@@ -102,10 +102,6 @@ class Net(nn.Module):
         # boundary encoder
         self.lb_net = BoundaryNet(config)
         self.rb_net = BoundaryNet(config)
-        
-        # # fusion net 1
-        # self.l2m = B2A(config)
-        # self.r2m = B2A(config)
 
         self.a2m = A2M(config)
         self.m2m = M2M(config)

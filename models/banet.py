@@ -34,14 +34,14 @@ config["lr_func"] = StepLR(config["lr"], config["lr_epochs"])
 
 if "save_dir" not in config:
     config["save_dir"] = os.path.join(
-        root_path, "results", "BANet"
+        root_path, "results", "banet"
     )
 
 if not os.path.isabs(config["save_dir"]):
     config["save_dir"] = os.path.join(root_path, "results", config["save_dir"])
 
-config["batch_size"] = 12
-config["val_batch_size"] = 12
+config["batch_size"] = 2
+config["val_batch_size"] = 2
 config["workers"] = 0
 config["val_workers"] = config["workers"]
 config['intersect_dim'] = 3
@@ -56,8 +56,8 @@ config["pred_range"] = [-100.0, 100.0, -100.0, 100.0]
 config["num_scales"] = 6
 config["n_actor"] = 128
 config["n_map"] = 128
-config["actor2map_dist"] = 20.0
-config["map2actor_dist"] = 20.0
+config["actor2map_dist"] = 50.0
+config["map2actor_dist"] = 50.0
 config["actor2actor_dist"] = 100.0
 config["pred_size"] = 60
 config["pred_step"] = 1
@@ -140,7 +140,7 @@ class Net(nn.Module):
 
     def forward(self, data: Dict) -> Dict[str, List[Tensor]]:
         # construct actor feature
-        actors, actor_idcs = actor_gather(gpu(data["agent_features"]))
+        actors, actor_idcs = actor_gather(gpu(data["features"]))
         actor_ctrs = gpu(data["ctrs"])
         actors = self.actor_net(actors)
 
@@ -310,7 +310,7 @@ class ActorNet(nn.Module):
         norm = "GN"
         ng = 1
 
-        n_in = 8
+        n_in = 7
         n_out = [32, 64, 128]
         blocks = [Res1d, Res1d, Res1d]
         num_blocks = [2, 2, 2]
