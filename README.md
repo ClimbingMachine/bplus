@@ -28,10 +28,10 @@ pip install -r requirements.txt
 **Step 3**: pre-process the Argoverse II Motion Forecasting Dataset:
 ```
 cd ArgoData
-python3 data_centerline.py --root path/to/Raw_Argoverse_II --split train
+python3 data_centerline.py --root path/to/raw_Argoverse_II --split train
 ```
 
-It is worthnoting that path/to/Raw_Argoverse_II should have the following data structure:
+It is worthnoting that path/to/raw_Argoverse_II should have the following data structure:
 
 ```
 Raw_Argoverse_II
@@ -61,9 +61,9 @@ Raw_Argoverse_II
 ### Single GPU Training
 
 ```
-python3 ba_train.py --root path/to/Raw_Argoverse_II
+python3 ba_train.py --root path/to/raw_Argoverse_II
 ```
 
 **Note 2**: during training, the checkpoints will be saved in `models/results` automatically. 
 
-**Note 3**: you can adjust the batch size and the number of devices. If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the actor2map distance or map2actor distance. 
+**Note 3**: If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the [actor2map distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L59) or [map2actor distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L60). Another trick is to comment out the [M2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L117) or [B2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L115) layers since they consume too much memory.
