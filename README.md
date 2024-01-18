@@ -8,7 +8,7 @@ This repository implements a [Boundary Aware Network (BANET)](https://arxiv.org/
 * [Getting Started](#getting-started)
 * [Model Training](#model-training)
     * [Single GPU Training](#single-gpu-training)
-    * [Distributed Training](#distributed-training)
+    * [Distributed Training](#distributed-training) 
 * [Evaluation](#evaluation)
 
 ## Getting-Started
