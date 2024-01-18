@@ -9,6 +9,7 @@ This repository implements a [Boundary Aware Network (BANET)](https://arxiv.org/
 * [Model Training](#model-training)
     * [Single GPU Training](#single-gpu-training)
     * [Distributed Training](#distributed-training)
+* [Evaluation](#evaluation)
 
 ## Getting-Started
 
@@ -77,3 +78,6 @@ Two scripts (`ga_distr_train.py` and `ba_distr_train.py`) are provided for distr
 ```
 python3 ga_distr_train.py --root path/to/raw_Argoverse_II
 ```
+
+## Evaluation
+
