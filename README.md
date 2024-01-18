@@ -100,9 +100,7 @@ python3 submission.py
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | SGPred | 1.31 | 4.10 | 0.70 | 1.63 | 0.17 | 0.57 | 1.92 |
 
-### Multi-World Prediction 
-
-**Note 4**: Without resembling, [ranking #6](https://eval.ai/web/challenges/challenge-page/1719/leaderboard/4761). 
+### Multi-World Prediction
 
 If you want to submit results to Multi-World Prediction, make some changes to [lines](https://github.com/ClimbingMachine/bplus/blob/main/submission.py#L36) to include prediction results for focal agents.
 
