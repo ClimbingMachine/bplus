@@ -7,7 +7,8 @@ This repository implements a [Boundary Aware Network (BANET)](https://arxiv.org/
 
 * [Getting Started](#getting-started)
 * [Model Training](#model-training)
-
+    * [Single GPU Training](#single-gpu-training)
+    * [Distributed Training](#distributed-training)
 
 ## Getting-Started
 
@@ -67,3 +68,6 @@ python3 ba_train.py --root path/to/raw_Argoverse_II
 **Note 2**: during training, the checkpoints will be saved in `models/results` automatically. 
 
 **Note 3**: If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the [actor2map distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L59) or [map2actor distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L60). Another trick is to comment out the [M2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L117) or [B2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L115) layers since they consume too much memory.
+
+
+### Distributed Training
