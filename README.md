@@ -71,3 +71,9 @@ python3 ba_train.py --root path/to/raw_Argoverse_II
 
 
 ### Distributed Training
+
+Two scripts (`ga_distr_train.py` and `ba_distr_train.py`) are provided for distributed training. Simply running the following command in your terminal and it will automatically detect the number of GPUs you are going to use:
+
+```
+python3 ga_distr_train.py --root path/to/raw_Argoverse_II
+```
