@@ -99,7 +99,7 @@ python3 submission.py
 ```
 
 | minFDE (K=6) | minFDE (K=1) | minADE (K=6) | minADE (K=1) | MR (K=6) | MR (K=1) | brier-minFDE (K=6) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1.31 | 4.10 | 0.70 | 1.63 | 0.17 | 0.57 | 1.92 |
 
 ### Multi-World Prediction
@@ -107,7 +107,7 @@ python3 submission.py
 If you want to submit results to Multi-World Prediction, make some changes to [lines](http://10.219.127.33/uida6192/bplus/blob/main/submission.py#L36) to include prediction results for focal agents.
 
 | avgMinFDE (K=6) | avgMinFDE (K=1) | avgMinADE (K=6) | avgMinADE (K=1) | actorMR (K=6) | actorCR (K=6) | avgBrierMinFDE (K=6) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1.57 | 2.77 | 0.70 | 1.10 | 0.22 | 0.02 | 2.23 |
 
 ###
