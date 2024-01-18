@@ -85,7 +85,7 @@ python3 ba_distr_train.py --root path/to/raw_Argoverse_II
 
 ## Evaluation
 
-During training, it will perform validation steps in several rounds. You can adjust validation frequencies by change the [snippets](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L24).
+During training, it will perform validation steps in several rounds. You can adjust validation frequencies by change the [snippets](http://10.219.127.33/uida6192/bplus/blob/main/models/banet.py#L24).
 
 ## Submission
 
