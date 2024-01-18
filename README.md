@@ -8,7 +8,7 @@ This repository implements a combined [Boundary Aware Network (BANET)](https://a
 * [Model Training](#model-training)
     * [Single GPU Training](#single-gpu-training)
     * [Distributed Training](#distributed-training) 
-* [Evaluation](#evaluation)
+* [Evaluation/Test](#Evaluation/Test)
     * [Single Agent Prediction](#single-agent-prediction)
     * [Multi-World Prediction](#multi-world-prediction) 
 
@@ -84,11 +84,9 @@ python3 ga_distr_train.py --root path/to/raw_Argoverse_II
 python3 ba_distr_train.py --root path/to/raw_Argoverse_II
 ```
 
-## Evaluation
+## Evaluation/Test
 
 During training, it will perform validation steps in several rounds. You can adjust validation frequencies by change the [snippets](http://10.219.127.33/uida6192/bplus/blob/main/models/banet.py#L24).
-
-## Submission
 
 ### Single-Agent Prediction
 
@@ -109,8 +107,6 @@ If you want to submit results to Multi-World Prediction, make some changes to [l
 | Name | avgMinFDE (K=6) | avgMinFDE (K=1) | avgMinADE (K=6) | avgMinADE (K=1) | actorMR (K=6) | actorCR (K=6) | avgBrierMinFDE (K=6) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | SGPred | 1.57 | 2.77 | 0.70 | 1.10 | 0.22 | 0.02 | 2.23 |
-
-###
 
 
 
