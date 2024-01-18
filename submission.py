@@ -31,15 +31,8 @@ if __name__ == "__main__":
         _,predictions = net(test_data)
 
         for batch in range(len(predictions['reg'])):
-            predictions['cls'][batch][0, 0:1] += 0.75
-            predictions['cls'][batch][0, :2] += 0.5
-            predictions['cls'][batch][0, 2:3] += 0.25
-            predictions['cls'][batch][0, 3:4] -= 0.25
-            predictions['cls'][batch][0, 4:5] -= 0.5
-            predictions['cls'][batch][0, 5:6] -= 0.75
             probabilities = m(predictions['cls'][batch][0]).detach().cpu().numpy()
             agt_prediction = predictions['reg'][batch][0].detach().cpu().numpy()
-
             final_predictions[test_data['scenario_id'][batch]] = {test_data['track_id'][batch]: tuple([agt_prediction, probabilities])}
 
     sub = ChallengeSubmission(final_predictions)
@@ -47,6 +40,6 @@ if __name__ == "__main__":
 
     save_path = './tests/'
     os.makedirs(save_path, exist_ok = True)
-    sub.to_parquet(os.path.join(save_path, 'test5.parquet'))
+    sub.to_parquet(os.path.join(save_path, 'test.parquet'))
 
     final_predictions = dict()

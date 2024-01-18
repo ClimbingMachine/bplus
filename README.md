@@ -1,6 +1,6 @@
-# B+: Unofficial Implementation of BANET and GANET for Argoverse II Motion Forecasting Competition
+# B+: Implementation of BANET and GANET for Argoverse II Motion Forecasting Competition
 
-This repository implements a [Boundary Aware Network (BANET)](https://arxiv.org/abs/2206.07934) and a [Goal Area Network (GANET)](https://arxiv.org/abs/2209.09723) for Argoverse II Motion Forecasting Competition. The backbone is based on the classic [LaneGCN](https://github.com/uber-research/LaneGCN).  
+This repository implements a combined [Boundary Aware Network (BANET)](https://arxiv.org/abs/2206.07934) and  [Goal Area Network (GANET)](https://arxiv.org/abs/2209.09723) for Argoverse II Motion Forecasting Competition. The backbone is based on the classic [LaneGCN](https://github.com/uber-research/LaneGCN).  
 
 
 ## Table of Contents
@@ -16,7 +16,7 @@ This repository implements a [Boundary Aware Network (BANET)](https://arxiv.org/
 **Step 1**: clone this repository:
 
 ```
-git clone https://github.com/ClimbingMachine/bplus.git && cd bplus
+git clone git@10.219.127.33:uida6192/bplus.git && cd bplus
 ```
 
 **Step 2**: create a virtual environment and install the dependencies:
@@ -68,7 +68,7 @@ python3 ba_train.py --root path/to/raw_Argoverse_II
 
 **Note 2**: during training, the checkpoints will be saved in `models/results` automatically. 
 
-**Note 3**: If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the [actor2map distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L59) or [map2actor distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L60). Another trick is to comment out the [M2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L117) or [B2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L115) layers since they consume too much memory.
+**Note 3**: If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the [actor2map distance](http://10.219.127.33/uida6192/bplus/blob/main/models/banet.py#L59) or [map2actor distance](http://10.219.127.33/uida6192/bplus/blob/main/models/banet.py#L60). Another trick is to comment out the [M2M](http://10.219.127.33/uida6192/bplus/blob/main/models/banet.py#L117) or [B2M](http://10.219.127.33/uida6192/bplus/blob/main/models/banet.py#L115) layers since they consume too much memory.
 
 
 ### Distributed Training
@@ -79,5 +79,15 @@ Two scripts (`ga_distr_train.py` and `ba_distr_train.py`) are provided for distr
 python3 ga_distr_train.py --root path/to/raw_Argoverse_II
 ```
 
+```
+python3 ba_distr_train.py --root path/to/raw_Argoverse_II
+```
+
 ## Evaluation
+
+During training, it will perform validation steps in several rounds. You can adjust validation frequencies by change the [snippets](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L24).
+
+## Submission
+
+
 
