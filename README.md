@@ -67,7 +67,8 @@ Raw_Argoverse_II
 python3 ba_train.py --root path/to/raw_Argoverse_II
 ```
 
-**Note 2**: during training, the checkpoints will be saved in `models/results` automatically. 
+**Note 2**: during training, the checkpoints will be saved in `models/structure/model_name/results` automatically. Remember to change the config["device"] if you 
+are using gpu or multiple gpus for training.
 
 **Note 3**: If you don't have sufficient computing resource for training, you can adjust some hyperparameters, e.g., reducing the [actor2map distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L59) or [map2actor distance](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L60). Another trick is to comment out the [M2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L117) or [B2M](https://github.com/ClimbingMachine/bplus/blob/main/models/banet.py#L115) layers since they consume too much memory.
 
