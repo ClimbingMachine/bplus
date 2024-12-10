@@ -676,8 +676,8 @@ def process_Argo2_dataset(root, split):
     processed_path = os.path.join(root, 'processed', split)
     os.makedirs(processed_path, exist_ok = True)
     
-    cur_dir = os.path.join(root,  split)
-    sub_dir = os.listdir(os.path.join(root,  split))
+    cur_dir = os.path.join(root,  split, "raw")
+    sub_dir = os.listdir(cur_dir)
     
     for _, scenario_id in tqdm(enumerate(sub_dir)):
         # try:
