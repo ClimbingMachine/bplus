@@ -105,7 +105,7 @@ def main(args):
     np.random.seed(seed)
     random.seed(seed)
 
-    device = "cuda:0"
+    device = "cpu"
     config, collate_fn, banet, loss, post_process, opt = get_banet()
     banet.to(device)
 
