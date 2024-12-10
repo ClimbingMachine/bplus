@@ -1,11 +1,12 @@
 # Copyright (c) 2020 Uber Technologies, Inc.
 # Please check LICENSE for more detail
 
-import numpy as np
 import sys
+
+import numpy as np
 import torch
 from torch import optim
-from typing import Iterable, List, Sequence, Set, Tuple, cast
+
 
 def index_dict(data, idcs):
     returns = dict()
@@ -48,7 +49,9 @@ class Logger(object):
 def load_pretrain(net, pretrain_dict):
     state_dict = net.state_dict()
     for key in pretrain_dict.keys():
-        if key in state_dict and (pretrain_dict[key].size() == state_dict[key].size()):
+        if key in state_dict and (
+            pretrain_dict[key].size() == state_dict[key].size()
+        ):
             value = pretrain_dict[key]
             if not isinstance(value, torch.Tensor):
                 value = value.data
@@ -56,18 +59,25 @@ def load_pretrain(net, pretrain_dict):
     net.load_state_dict(state_dict)
 
 
-def gpu(data):
+def transfer_device(data, device="cuda"):
     """
-    Transfer tensor in `data` to gpu recursively
-    `data` can be dict, list or tuple
+    Transfer tensor in `data` to the specified device recursively.
+    `data` can be dict, list, or tuple.
+
+    Args:
+        data: The input data (dict, list, tuple, or tensor).
+        device (str): The target device ('cuda' for GPU, 'cpu' for CPU).
     """
-    if isinstance(data, list) or isinstance(data, tuple):
-        data = [gpu(x) for x in data]
+    if isinstance(data, (list, tuple)):
+        data = [transfer_device(x, device) for x in data]
     elif isinstance(data, dict):
-        data = {key:gpu(_data) for key,_data in data.items()}
+        data = {
+            key: transfer_device(value, device) for key, value in data.items()
+        }
     elif isinstance(data, torch.Tensor):
-        data = data.contiguous().cuda(non_blocking=True)
+        data = data.contiguous().to(device, non_blocking=True)
     return data
+
 
 def to_long(data):
     if isinstance(data, dict):
@@ -78,6 +88,7 @@ def to_long(data):
     if torch.is_tensor(data) and data.dtype == torch.int16:
         data = data.long()
     return data
+
 
 class Optimizer(object):
     def __init__(self, params, config, coef=None):
@@ -101,7 +112,9 @@ class Optimizer(object):
         assert opt == "sgd" or opt == "adam"
         if opt == "sgd":
             self.opt = optim.SGD(
-                param_groups, momentum=config["momentum"], weight_decay=config["wd"]
+                param_groups,
+                momentum=config["momentum"],
+                weight_decay=config["wd"],
             )
         elif opt == "adam":
             self.opt = optim.Adam(param_groups, weight_decay=0)
@@ -132,7 +145,9 @@ class Optimizer(object):
         low, high = self.clip_low, self.clip_high
         params = []
         for param_group in self.opt.param_groups:
-            params += list(filter(lambda p: p.grad is not None, param_group["params"]))
+            params += list(
+                filter(lambda p: p.grad is not None, param_group["params"])
+            )
         for p in params:
             mask = p.grad.data < low
             p.grad.data[mask] = low
@@ -168,8 +183,7 @@ def collate_fn(batch):
 
 
 def from_numpy(data):
-    """Recursively transform numpy.ndarray to torch.Tensor.
-    """
+    """Recursively transform numpy.ndarray to torch.Tensor."""
     if isinstance(data, dict):
         for key in data.keys():
             data[key] = from_numpy(data[key])

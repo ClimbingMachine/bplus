@@ -1,44 +1,48 @@
-from torch.utils.data import DataLoader
-from ArgoData.data_centerline import Argo2Dataset
-import torch, random, os, time, argparse, sys
-import numpy as np
-from tqdm import tqdm
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+import argparse
+import os
+import random
+import sys
+import time
 
-from models.banet import get_model
-from loss.loss import *
-from utils.utils import Logger
+import numpy as np
+import torch
 
 # ddp settings
 import torch.multiprocessing as mp
-from torch.utils.data.distributed import DistributedSampler
+from torch.distributed import destroy_process_group, init_process_group
 from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.distributed import init_process_group, destroy_process_group
+from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from tqdm import tqdm
+
+from ArgoData.data_centerline import Argo2Dataset
+from models.structure.banet import get_banet
+from utils.helper import Logger
 
 
 # DDP setup
 def ddp_setup(rank: int, world_size: int):
-   """
-   Args:
-       rank: Unique identifier of each process
-       world_size: Total number of processes
-   """
-   os.environ["MASTER_ADDR"] = "localhost"
-   os.environ["MASTER_PORT"] = "12355"
-   init_process_group(backend="nccl", rank=rank, world_size=world_size)
+    """
+    Args:
+        rank: Unique identifier of each process
+        world_size: Total number of processes
+    """
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "12355"
+    init_process_group(backend="nccl", rank=rank, world_size=world_size)
 
 
-def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=None):
+def train(
+    epoch, config, train_loader, net, loss, post_process, opt, val_loader=None
+):
     net.train()
 
-    train_loader.sampler.set_epoch(epoch)          # Calling the set_epoch() method on the DistributedSampler at the beginning of each epoch is necessary to make shuffling
+    train_loader.sampler.set_epoch(epoch)
 
     num_batches = len(train_loader)
     epoch_per_batch = 1.0 / num_batches
     save_iters = int(np.ceil(config["save_freq"] * num_batches))
-    display_iters = int(
-        config["display_iters"] / (config["batch_size"])
-    )
+    display_iters = int(config["display_iters"] / (config["batch_size"]))
     val_iters = int(config["val_iters"] / (config["batch_size"]))
 
     start_time = time.time()
@@ -47,7 +51,7 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
         epoch += epoch_per_batch
         data = dict(data)
         goal, output = net(data)
-        
+
         loss_out = loss(goal, output, data)
         post_out = post_process(output, data)
         post_process.append(metrics, loss_out, post_out)
@@ -71,11 +75,11 @@ def train(epoch, config, train_loader, net, loss, post_process, opt, val_loader=
             val(config, val_loader, net, loss, post_process, epoch)
 
         if epoch >= config["num_epochs"]:
-            val(config, val_loader, net, loss, post_process, epoch)
+            val(val_loader, net, loss, post_process, epoch)
             return
 
 
-def val(config, data_loader, net, loss, post_process, epoch):
+def val(data_loader, net, loss, post_process, epoch):
     net.eval()
 
     start_time = time.time()
@@ -93,22 +97,28 @@ def val(config, data_loader, net, loss, post_process, epoch):
     post_process.display(metrics, dt, epoch)
     net.train()
 
+
 def save_ckpt(net, opt, save_dir, epoch):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
     # state_dict = net.state_dict()                      # one gpu saving
-    state_dict = net.module.state_dict()                 # ddp saving
+    state_dict = net.module.state_dict()  # ddp saving
 
     for key in state_dict.keys():
         state_dict[key] = state_dict[key].cpu()
 
     save_name = "%3.3f.ckpt" % epoch
     torch.save(
-        {"epoch": epoch, "state_dict": state_dict, "opt_state": opt.opt.state_dict()},
+        {
+            "epoch": epoch,
+            "state_dict": state_dict,
+            "opt_state": opt.opt.state_dict(),
+        },
         os.path.join(save_dir, save_name),
     )
-    
+
+
 def main(rank, args):
 
     seed = 0
@@ -117,12 +127,10 @@ def main(rank, args):
     np.random.seed(seed)
     random.seed(seed)
 
-    torch.cuda.set_device(rank) # fixed error Duplicate GPU detected : rank 2 and rank 0 both on CUDA device 1000
-    ddp_setup(rank, 2)          # assume 2 gpus are use
-    
-    config, collate_fn, net, loss, post_process, opt = get_model()
-    # checkpoint = torch.load("./models/results/banet/6.000.ckpt")
-    # net.load_state_dict(checkpoint['state_dict'], strict = False)   
+    torch.cuda.set_device(rank)
+    ddp_setup(rank, 2)  # assume 2 gpus are use
+
+    config, collate_fn, net, loss, post_process, opt = get_banet()
 
     net = DDP(net, device_ids=[rank], find_unused_parameters=True)
 
@@ -136,43 +144,52 @@ def main(rank, args):
         os.makedirs(save_dir)
     sys.stdout = Logger(log)
 
-    train_data = Argo2Dataset(root = args.root, split  = 'train')
+    train_data = Argo2Dataset(root=args.root, split="train")
     train_loader = DataLoader(
-            train_data,
-            batch_size = config['batch_size'],
-            num_workers = config['workers'],
-            shuffle = False,
-            collate_fn = collate_fn,
-            pin_memory=True,
-            sampler=DistributedSampler(train_data),
-        )
+        train_data,
+        batch_size=config["batch_size"],
+        num_workers=config["workers"],
+        shuffle=False,
+        collate_fn=collate_fn,
+        pin_memory=True,
+        sampler=DistributedSampler(train_data),
+    )
 
-    val_data = Argo2Dataset(root = args.root, split  = 'val')
+    val_data = Argo2Dataset(root=args.root, split="val")
 
     val_loader = DataLoader(
-            val_data,
-            batch_size = config['val_batch_size'],
-            num_workers = config['val_workers'],
-            shuffle = False,
-            collate_fn = collate_fn,
-            pin_memory=True,
-            sampler=DistributedSampler(val_data),
-        )
+        val_data,
+        batch_size=config["val_batch_size"],
+        num_workers=config["val_workers"],
+        shuffle=False,
+        collate_fn=collate_fn,
+        pin_memory=True,
+        sampler=DistributedSampler(val_data),
+    )
 
-    epoch = config['epoch']
+    epoch = config["epoch"]
     remaining_epochs = int(np.ceil(config["num_epochs"] - epoch))
 
     for i in range(remaining_epochs):
-        train(epoch + i, config, train_loader, net, loss, post_process, opt, val_loader)
+        train(
+            epoch + i,
+            config,
+            train_loader,
+            net,
+            loss,
+            post_process,
+            opt,
+            val_loader,
+        )
 
-    destroy_process_group()                               # destroy the process group
+    destroy_process_group()  # destroy the process group
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type = str, default = "../")
+    parser.add_argument("--root", type=str, default="../")
     # parser.add_argument("--rank", type = int)
     world_size = torch.cuda.device_count()
     args = parser.parse_args()
-    mp.spawn(main, args  = (args, ), nprocs = world_size)
-    #main(args)
+    mp.spawn(main, args=(args,), nprocs=world_size)
+    # main(args)
