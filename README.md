@@ -11,6 +11,7 @@ This repository implements a combined [Boundary Aware Network (BANET)](https://a
 * [Evaluation/Test](#Evaluation/Test)
     * [Single Agent Prediction](#single-agent-prediction)
     * [Multi-World Prediction](#multi-world-prediction) 
+* [Visualization](#Visualization)
 
 ## Getting-Started
 
@@ -111,5 +112,11 @@ If you want to submit results to Multi-World Prediction, make some changes to [l
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | SGPred | 1.57 | 2.77 | 0.70 | 1.10 | 0.22 | 0.02 | 2.23 |
 
+## Visualization
 
+An visualization script is provided. Feel free to try if you have a pretrained checkpoint. Simply run: 
 
+```
+cd /path/to/bplus
+python3 visualization/viz.py
+```
